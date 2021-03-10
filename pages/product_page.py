@@ -24,30 +24,37 @@ class ProductPage(BasePage):
         return True
 
     def should_be_success_message(self):
-        product_name = self.browser.find_element_by_css_selector(".col-sm-6.product_main>h1").text
+        product_name_text = self.browser.find_element_by_css_selector(".col-sm-6.product_main>h1").text
         first_part_of_success_text = WebDriverWait(self.browser, 10).until(
             EC.visibility_of_element_located((
                 By.CSS_SELECTOR, "div:nth-child(1).alert.alert-safe.alert-noicon.alert-success>div>strong"))).text
         second_part_of_success_text = WebDriverWait(self.browser, 10).until(
             EC.visibility_of_element_located((
                 By.CSS_SELECTOR, "div:nth-child(1).alert.alert-safe.alert-noicon.alert-success>div"))).text
-        assert product_name == first_part_of_success_text, "incorrect product name in success message"
+        assert product_name_text == first_part_of_success_text, "incorrect product name in success message"
         assert " has been added to your basket." in second_part_of_success_text, \
             "incorrect success message"
         return True
 
     def should_be_correct_price_in_basket(self):
-        # price_in_basket1 - this is price in success message
-        price_in_basket1 = WebDriverWait(self.browser, 10).until(
+        price_in_basket_in_success_message = WebDriverWait(self.browser, 10).until(
             EC.visibility_of_element_located((
                 By.CSS_SELECTOR,
                 "#messages .alert.alert-safe.alert-noicon.alert-info.fade.in>.alertinner >p>strong"))).text
-        # price_in_basket2 - this is price in header,
         # commented out next check since the text in price_in_basket2 contains extra characters " "
-        # price_in_basket2 = WebDriverWait(self.browser, 10).until(
-        # EC.visibility_of_element_located((
-        # By.CSS_SELECTOR, ".basket-mini.pull-right.hidden-xs"))).text
+        price_in_basket_in_header = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
+            By.CSS_SELECTOR, ".basket-mini.pull-right.hidden-xs"))).text
         price = self.browser.find_element_by_css_selector("#content_inner .price_color").text
-        assert price == price_in_basket1, "incorrect price in basket"
-        # assert price == price_in_basket2, "incorrect price in basket"
+        assert price == price_in_basket_in_success_message, "incorrect price in basket in success message"
+        assert price in price_in_basket_in_header, "incorrect price in basket in header"
+        return True
+
+    def should_not_be_success_message(self):
+        assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), \
+            "Success message is presented, but should not be"
+        return True
+
+    def should_success_message_disappeared(self):
+        assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), \
+            "Success message is presented, but should not be"
         return True
