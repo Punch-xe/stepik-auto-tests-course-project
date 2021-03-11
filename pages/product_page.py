@@ -41,7 +41,6 @@ class ProductPage(BasePage):
             EC.visibility_of_element_located((
                 By.CSS_SELECTOR,
                 "#messages .alert.alert-safe.alert-noicon.alert-info.fade.in>.alertinner >p>strong"))).text
-        # commented out next check since the text in price_in_basket2 contains extra characters " "
         price_in_basket_in_header = WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((
             By.CSS_SELECTOR, ".basket-mini.pull-right.hidden-xs"))).text
         price = self.browser.find_element_by_css_selector("#content_inner .price_color").text
